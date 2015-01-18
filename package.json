@@ -7,6 +7,14 @@
   "bin": {
     "bro-size": "./bin/bro-size"
   },
+  "keywords": [
+    "browserify",
+    "size",
+    "package",
+    "gzip",
+    "uglify",
+    "bytes"
+  ],
   "author": "Karolis Narkevicius <karolis.n@gmail.com>",
   "license": "MIT",
   "dependencies": {
