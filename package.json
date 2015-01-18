@@ -1,0 +1,22 @@
+{
+  "name": "bro-size",
+  "version": "1.0.0",
+  "description": "Report the size of a browserified package - uncompressed, compressed and gzipped.",
+  "main": "index.js",
+  "scripts": {},
+  "bin": {
+    "bro-size": "./bin/bro-size"
+  },
+  "author": "Karolis Narkevicius <karolis.n@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "JSONStream": "^0.10.0",
+    "browserify": "^8.1.1",
+    "easy-table": "^0.3.0",
+    "gzip-size": "^1.0.0",
+    "pretty-bytes": "^1.0.2",
+    "through": "^2.3.6",
+    "through2": "^0.6.3",
+    "uglify-js": "^2.4.16"
+  }
+}

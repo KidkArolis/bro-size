@@ -1,0 +1,75 @@
+#!/usr/bin/env node
+
+var JSONStream = require('JSONStream');
+var through = require('through2');
+
+var UglifyJS = require("uglify-js");
+var gzipSize = require("gzip-size");
+var prettyBytes = require('pretty-bytes');
+var Table = require('easy-table');
+
+var b = require('browserify/bin/args')(process.argv.slice(2));
+var b2 = require('browserify/bin/args')(process.argv.slice(2));
+process.stdout.on('error', process.exit);
+
+if (b.argv.v || b.argv.version) {
+  return console.log(require('../package.json').version);
+}
+
+b.on('error', errorExit);
+
+// if (b.argv.list) {
+//   console.log('-------');
+//   console.log('Modules');
+//   console.log('-------');
+//   b.pipeline.get('deps').push(through.obj(
+//     function (row, enc, next) {
+//       console.log(row.file || row.id);
+//       next();
+//     }
+//   ));
+//   return b.bundle();
+// }
+
+var bundle = b2.bundle();
+bundle.on('error', errorExit);
+
+var output = [];
+bundle.on('data', function(d) {
+  output.push(d);
+});
+bundle.on('end', function() {
+  var buf = Buffer.concat(output);
+
+  // if you need to pass code instead of file name
+  var uglified = UglifyJS.minify(buf.toString(), {fromString: true});
+
+  var gzippedSize = gzipSize.sync(uglified.code);
+
+  var data = [
+    { name: "Uncompressed", size: prettyBytes(buf.length) },
+    { name: "Compressed", size: prettyBytes(uglified.code.length) },
+    { name: "Compressed + Gzipped", size: prettyBytes(gzippedSize) }
+  ];
+
+  var t = new Table();
+
+  data.forEach(function (size) {
+    t.cell('', size.name);
+    t.cell('Size', size.size);
+    t.newRow();
+  });
+
+  console.log(t.toString());
+});
+
+// bundle.pipe(process.stdout);
+
+function errorExit(err) {
+  if (err.stack) {
+    console.error(err.stack);
+  } else {
+    console.error(String(err));
+  }
+  process.exit(1);
+}
