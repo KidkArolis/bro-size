@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
+var fs = require('fs');
 var JSONStream = require('JSONStream');
 var through = require('through2');
-
 var UglifyJS = require("uglify-js");
 var gzipSize = require("gzip-size");
 var prettyBytes = require('pretty-bytes');
@@ -18,18 +18,29 @@ if (b.argv.v || b.argv.version) {
 
 b.on('error', errorExit);
 
-// if (b.argv.list) {
-//   console.log('-------');
-//   console.log('Modules');
-//   console.log('-------');
-//   b.pipeline.get('deps').push(through.obj(
-//     function (row, enc, next) {
-//       console.log(row.file || row.id);
-//       next();
-//     }
-//   ));
-//   return b.bundle();
-// }
+if (b.argv.list) {
+  // var gzippedSize = gzipSize.sync(uglified.code);
+
+  var data = [];
+  var t = new Table();
+  b.pipeline.get('deps').pipe(through.obj(
+    function (row, enc, next) {
+
+
+      console.log(row.file || row.id);
+      next();
+    }
+  )).on('end', function () {
+    console.log('done');
+    // data.forEach(function (size) {
+    //   t.cell('', size.name);
+    //   t.cell('Size', size.size);
+    //   t.newRow();
+    // });
+    // console.log(t.toString());
+  });
+  return b.bundle();
+}
 
 var bundle = b2.bundle();
 bundle.on('error', errorExit);
